@@ -157,9 +157,13 @@ class PoleServer_handler implements Runnable {
         //initially balance pendulum
         if(angleDot > 0.001 || angleDot < -0.001)
             return balance_pendulum(angle, angleDot);
-        else {
+        else if (posDot > 0.001 || posDot < -0.001){
             System.out.println("***********Balanced***************");
             return posDot;
+        }
+        else
+        {
+            return balance_pendulum(angle, angleDot);
         }
         //then cancel velocity while balancing
    }

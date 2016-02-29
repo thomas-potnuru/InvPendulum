@@ -154,14 +154,32 @@ class PoleServer_handler implements Runnable {
     // independently. The interface needs to be changed if the control of one
     // pendulum needs sensing data from other pendulums.
     double calculate_action(double angle, double angleDot, double pos, double posDot) {
+        double targetPos = 2.0; //Target Position
+        double movementVector = targetPos - pos;
         //initially balance pendulum
-        if(angleDot > 0.001 || angleDot < -0.001)
+        if((angleDot < 0.001 && angleDot > -0.001) && (posDot < 0.001 && posDot > -0.001))
+        {
+
+                System.out.println("********IS BALANCED*******\n*       Heading to Target     *\n******************");
+                if(Math.abs(movementVector) > 0.001)
+                    action = -movementVector*.75;
+                else
+                    action = balance_pendulum(angle,angleDot);
+                return action;
+        }
+        else if(angleDot > 0.001 || angleDot < -0.001)
             return balance_pendulum(angle, angleDot);
-        else {
-            System.out.println("***********Balanced***************");
+
+            //then cancel velocity while balancing
+        else if (posDot > 0.001 || posDot < -0.001){
             return posDot;
         }
-        //then cancel velocity while balancing
+        else
+        {
+            return balance_pendulum(angle, angleDot);
+        }
+        //then move towards target location, uses janky way based on how balancing algo works.
+
    }
 
 
